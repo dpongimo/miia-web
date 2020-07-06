@@ -7,7 +7,7 @@
     GetKeys,
     required_permissions,
   } from "../js/hydrus-connection.js";
-  import { ShowError } from "../js/stores.js";
+  import { ShowError, Connected } from "../js/stores.js";
 
   let address = "http://127.0.0.1:45869";
   let access_keys = [];
@@ -33,7 +33,11 @@
     }
     (async () => {
       if (!!local_address_json) {
-        await connect();
+        try {
+          await connect();
+        } catch (error) {
+          console.error(error);
+        }
       }
     })();
     // If default, do connect now
@@ -43,6 +47,7 @@
   });
 
   async function connect() {
+    if(connecting) return;
     connecting = true;
     const client = GetClient(address);
 
@@ -57,6 +62,7 @@
     } catch (error) {
       console.error(error);
       ShowError.set(error);
+      Connected.set(false);
     }
     connecting = false;
   }
@@ -87,6 +93,7 @@
       localStorage.setItem("access_keys", JSON.stringify(access_keys));
       console.log(human_description);
       key_validated = true;
+      Connected.set(true);
     } catch (error) {
       console.error(error);
     }
@@ -102,9 +109,17 @@
     <p>Hydrus Client URL</p>
     <input value={address} />
 
-    <button on:click={connect}>Connect</button>
+    <button on:click={connect} class="btn btn-primary" class:disabled={connecting}>Connect</button>
     {#if connecting}
-      <p>Connecting...</p>
+      <div class="alert alert-primary d-flex align-items-left" role="alert">
+        <div class="spinner-border" role="status" aria-hidden="true" />
+        <p>
+          Connecting to
+          <strong>{address}</strong>
+          ...
+        </p>
+
+      </div>
     {/if}
   </div>
 {:else if !key_validated}
