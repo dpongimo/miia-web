@@ -1,13 +1,11 @@
 <script>
   import { onMount } from "svelte";
-  import { Connect, GetClient } from "../js/hydrus-connection.js";
-  onMount(() => {
-    const client = GetClient();
-    client.request_new_permissions("miia-web", [0, 1], (response) => {
-      console.log(response);
-      client.access_key = response.access_key;
-    });
-  });
+  import { GetClient } from "../js/hydrus-connection.js";
+
+  import Setup from "../components/Setup.svelte";
+
+  let connected = false;
+  let tabs = [];
 </script>
 
 <style lang="scss">
@@ -18,15 +16,7 @@
   <title>Miia Web</title>
 </svelte:head>
 
-<h1>Great success!</h1>
+<h1>Miia Web!</h1>
+<p>a web client for Hydrus</p>
 
-<figure>
-  <img alt="Success Kid" src="successkid.jpg" />
-  <figcaption>Have fun with Sapper!</figcaption>
-</figure>
-
-<p>
-  <strong>
-    Try editing this file (src/routes/index.svelte) to test live reloading.
-  </strong>
-</p>
+<Setup></Setup>
