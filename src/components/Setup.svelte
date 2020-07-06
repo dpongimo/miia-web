@@ -107,7 +107,7 @@
 {#if !address_validated}
   <div id="connect-address">
     <p>Hydrus Client URL</p>
-    <input value={address} />
+    <input bind:value={address} />
 
     <button on:click={connect} class="btn btn-primary" class:disabled={connecting}>Connect</button>
     {#if connecting}
@@ -130,7 +130,7 @@
       </div>
       <div class="previous-keys">
         <p>Previous Keys</p>
-        <select value={selected_key}>
+        <select bind:value={selected_key}>
           {#each access_keys as key}
             <option value={key}>{key}</option>
           {/each}
@@ -140,7 +140,7 @@
     {/if}
 
     <div class="add-manual-key">
-      <input type="text" value={entered_key} />
+      <input type="text" bind:value={entered_key} />
       <button
         on:click={() => {
           access_keys.push(entered_key);
