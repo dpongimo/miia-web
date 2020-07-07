@@ -1,4 +1,4 @@
-import { Client } from "hydrus.js";
+import { Client } from "async-hydrus.js";
 
 /** @type {Client} */
 let client;
@@ -9,23 +9,34 @@ let access_keys = [];
 
 export function Connect(address, key) {
 	// client = Client({ address: address, access_key: key });
-	client = new Client({ address: address, key: key });
-}
-
-/** @returns {Client} */
-export function GetClient(address) {
-	if (!client || !!address) {
-		client = new Client({ address: !!address ? address : "http://127.0.0.1:45869" });
-	}
+	const param = { address: !!address ? address : GetCachedAddress() };
+	param.key = !!key ? key : GetCachedKey();
+	client = new Client(param);
 	return client;
 }
 
-export function GetKeys() {
-	const localstorage_keys_json = localStorage.key("access_keys");
-	if (!!localstorage_keys_json) {
-		return JSON.stringify(localstorage_keys_json);
-	} else {
-		return [];
+/** @returns {Client} */
+export function GetClient(address = undefined, key = undefined) {
+	if (!client) {
+		Connect(address, key);
+	}
+	// client.fetch = window.fetch;
+	return client;
+}
+
+export function GetCachedAddress() {
+	try {
+		return JSON.parse(localStorage.getItem("address"));
+	} catch (error) {
+		return Client.prototype.default_api_address;
+
+	}
+}
+export function GetCachedKey() {
+	try {
+		return JSON.parse(localStorage.getItem("access_key"));
+	} catch (error) {
+		return undefined;
 	}
 }
 

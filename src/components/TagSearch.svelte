@@ -1,11 +1,12 @@
 <script>
-  import { Client } from "hydrus.js";
+  import { Client } from "async-hydrus.js";
 
   import { onMount } from "svelte";
+  import { goto } from "@sapper/app";
   import { GetClient } from "../js/hydrus-connection.js";
   import { ShowError } from "../js/stores.js";
 
-  let tags = ["test", "tacos"];
+  export let tags = ["green"];
   let tag_input = "";
 
   function addTag() {
@@ -22,6 +23,10 @@
     console.log(tag, index);
     tags.splice(index, 1);
     tags = tags;
+  }
+
+  function search() {
+    goto("/search/" + JSON.stringify(tags));
   }
 </script>
 
@@ -53,13 +58,23 @@
         aria-describedby="add-tag"
         bind:value={tag_input} />
       <button
-        class="btn btn-outline-primary"
+        class="btn"
+        class:btn-primary={tag_input.length > 0}
+        class:btn-outline-secondary={tag_input.length === 0}
+        disabled={tag_input.length === 0}
         type="button"
         id="add-tag"
         on:click|preventDefault={addTag}>
         Add Tag
       </button>
-      <button class="btn btn-primary" type="button" id="search">Search</button>
+      <button
+        class="btn btn-success"
+        type="button"
+        id="search"
+        disabled={tags.length === 0}
+        on:click|preventDefault={search}>
+        Search
+      </button>
     </div>
     <div id="query" class="row">
       <div id="tags" class="col">

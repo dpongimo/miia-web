@@ -1,17 +1,15 @@
 <script>
-  import { Client } from "hydrus.js";
+  import { Client } from "async-hydrus.js";
 
   import { onMount } from "svelte";
   import {
     GetClient,
-    GetKeys,
     required_permissions,
   } from "../js/hydrus-connection.js";
   import { ShowError, Connected } from "../js/stores.js";
 
   let address = "http://127.0.0.1:45869";
-  let access_keys = [];
-  let selected_key;
+  let selected_key = "";
   let entered_key = "";
   let connecting = false;
   let address_validated = false;
@@ -24,12 +22,9 @@
       address = JSON.parse(local_address_json);
     }
     // Get default key
-    const local_keys_json = localStorage.getItem("access_keys");
-    if (!!local_keys_json) {
-      access_keys = JSON.parse(local_keys_json);
-      if (access_keys.length > 0) {
-        selected_key = access_keys[0];
-      }
+    const local_key_json = localStorage.getItem("access_key");
+    if (!!local_key_json) {
+      selected_key = JSON.parse(local_key_json);
     }
     (async () => {
       if (!!local_address_json) {
@@ -47,7 +42,7 @@
   });
 
   async function connect() {
-    if(connecting) return;
+    if (connecting) return;
     connecting = true;
     const client = GetClient(address);
 
@@ -74,29 +69,31 @@
         "miia-web",
         required_permissions
       );
-      access_keys.push(access_key);
 
-      localStorage.setItem("access_keys", JSON.stringify(access_keys));
+      localStorage.setItem("access_key", JSON.stringify(selected_key));
       selected_key = access_key;
+      entered_key = selected_key;
     } catch (error) {
       console.error(error);
     }
   }
 
   async function validateKey() {
+    connecting = true;
     const client = GetClient();
     client.access_key = selected_key;
     try {
       const { human_description } = await client.verify_access_key(
         selected_key
       );
-      localStorage.setItem("access_keys", JSON.stringify(access_keys));
+      localStorage.setItem("access_key", JSON.stringify(selected_key));
       console.log(human_description);
       key_validated = true;
       Connected.set(true);
     } catch (error) {
       console.error(error);
     }
+    connecting = false;
   }
 </script>
 
@@ -109,41 +106,45 @@
     <p>Hydrus Client URL</p>
     <input bind:value={address} />
 
-    <button on:click={connect} class="btn btn-primary" class:disabled={connecting}>Connect</button>
+    <button
+      on:click={connect}
+      class="btn btn-primary"
+      class:disabled={connecting}>
+      Connect
+    </button>
     {#if connecting}
       <div class="alert alert-primary d-flex align-items-left" role="alert">
         <div class="spinner-border" role="status" aria-hidden="true" />
-        <p>
-          Connecting to
-          <strong>{address}</strong>
-          ...
-        </p>
-
+        {#if !address_validated}
+          <p>
+            Connecting to
+            <strong>{address}</strong>
+            ...
+          </p>
+        {/if}
+        {#if !key_validated && !!selected_key}
+          <p>Validating key...</p>
+        {/if}
       </div>
     {/if}
   </div>
 {:else if !key_validated}
   <div id="connect-key">
-    {#if access_keys.length > 0}
+    {#if !selected_key}
       <div class="request-new-key">
-        <button on:click={requestSessionKey}>Request Temporary Key</button>
-      </div>
-      <div class="previous-keys">
-        <p>Previous Keys</p>
-        <select bind:value={selected_key}>
-          {#each access_keys as key}
-            <option value={key}>{key}</option>
-          {/each}
-        </select>
-        <button on:click={validateKey}>Use Key</button>
+        <button class="btn btn-primary" on:click={requestSessionKey}>
+          Request Temporary Key
+        </button>
       </div>
     {/if}
 
-    <div class="add-manual-key">
-      <input type="text" bind:value={entered_key} />
+    <div class="add-manual-key input-group">
+      <input class="form-control" type="password" bind:value={entered_key} />
       <button
+        class="btn"
+        class:btn-secondary={!selected_key}
+        class:btn-primary={!!selected_key}
         on:click={() => {
-          access_keys.push(entered_key);
           selected_key = entered_key;
           validateKey();
         }}>
