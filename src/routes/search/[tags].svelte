@@ -18,6 +18,10 @@
   import Lazy from "svelte-lazy";
   export let file_ids, tags;
 
+  let client;
+
+  let first_id;
+
   onMount(() => {
     if (file_ids === null) {
       (async () => {
@@ -31,13 +35,44 @@
       })();
     }
   });
+
+  async function getThumbnail(file_id) {
+    if (!client) client = GetClient();
+    return await client.get_thumbnail({ file_id });
+  }
 </script>
 
-{#each file_ids as this_id}
-  <Lazy
-    height={300}
-    offset={150}
-    fadeOption={{ delay: 100, duration: 200 }}>
-    <p>{this_id}</p>
-  </Lazy>
-{/each}
+<style lang="scss">
+  .card-img {
+    width: 100%;
+    height: 125px;
+  }
+</style>
+
+<p>hey</p>
+<div class="card-columns">
+  {#each file_ids as this_id}
+    <div class="card">
+      <Lazy
+        height={300}
+        offset={150}
+        fadeOption={{ delay: 100, duration: 200 }}>
+        {#await getThumbnail(this_id)}
+          <div class="card-body">
+            <div class="spinner-border" role="status" aria-hidden="true" />
+            <p>Querying</p>
+          </div>
+        {:then thumbnail_blob}
+          <img
+            class="card-img"
+            src={URL.createObjectURL(thumbnail_blob)}
+            alt={this_id} />
+        {:catch error}
+          <div class="card-body">
+            <pre style="color: red">{error.message}</pre>
+          </div>
+        {/await}
+      </Lazy>
+    </div>
+  {/each}
+</div>
