@@ -7,6 +7,7 @@ let client;
 let access_keys = [];
 
 
+/** @returns {Client} */
 export function Connect(address, key) {
 	// client = Client({ address: address, access_key: key });
 	const param = { address: !!address ? address : GetCachedAddress() };
@@ -20,18 +21,21 @@ export function GetClient(address = undefined, key = undefined) {
 	if (!client) {
 		Connect(address, key);
 	}
-	// client.fetch = window.fetch;
+	client.fetch = fetch;
 	return client;
 }
 
+/** @returns {String} */
 export function GetCachedAddress() {
 	try {
 		return JSON.parse(localStorage.getItem("address"));
 	} catch (error) {
-		return Client.prototype.default_api_address;
+		return Client.default_api_address;
 
 	}
 }
+
+/** @returns {String} */
 export function GetCachedKey() {
 	try {
 		return JSON.parse(localStorage.getItem("access_key"));
@@ -40,7 +44,7 @@ export function GetCachedKey() {
 	}
 }
 
-export let required_permissions = [
-	Client.prototype.PERMISSIONS.SEARCH_FILES,
-	Client.prototype.PERMISSIONS.MANAGE_PAGES
+export const required_permissions = [
+	Client.PERMISSIONS.SEARCH_FILES,
+	Client.PERMISSIONS.MANAGE_PAGES
 ]

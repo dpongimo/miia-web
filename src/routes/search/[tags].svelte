@@ -5,6 +5,7 @@
     const tags = JSON.parse(params.tags);
     try {
       const client = GetClient();
+      client.fetch = this.fetch;
       const { file_ids } = await client.search_files(tags, true, true);
       return { file_ids, tags };
     } catch (error) {
@@ -15,11 +16,11 @@
 
 <script>
   import { onMount } from "svelte";
-  import Lazy from "svelte-lazy";
+  import ThumbnailGallery from "../../components/ThumbnailGallery.svelte";
   export let file_ids, tags;
 
   let client;
-
+  let start, end;
   let first_id;
 
   onMount(() => {
@@ -34,6 +35,7 @@
         file_ids = new_file_ids;
       })();
     }
+    file_ids = file_ids.slice(0, 10);
   });
 
   async function getThumbnail(file_id) {
@@ -43,36 +45,15 @@
 </script>
 
 <style lang="scss">
-  .card-img {
-    width: 100%;
-    height: 125px;
-  }
+
 </style>
 
-<p>hey</p>
-<div class="card-columns">
-  {#each file_ids as this_id}
-    <div class="card">
-      <Lazy
-        height={300}
-        offset={150}
-        fadeOption={{ delay: 100, duration: 200 }}>
-        {#await getThumbnail(this_id)}
-          <div class="card-body">
-            <div class="spinner-border" role="status" aria-hidden="true" />
-            <p>Querying</p>
-          </div>
-        {:then thumbnail_blob}
-          <img
-            class="card-img"
-            src={URL.createObjectURL(thumbnail_blob)}
-            alt={this_id} />
-        {:catch error}
-          <div class="card-body">
-            <pre style="color: red">{error.message}</pre>
-          </div>
-        {/await}
-      </Lazy>
-    </div>
+<h1>Search Results for</h1>
+
+<div class="tags">
+  {#each tags as tag}
+    <span type="button" class="btn btn-secondary btn-sm">{tag}</span>
   {/each}
 </div>
+
+<ThumbnailGallery {file_ids} />

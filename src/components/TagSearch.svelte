@@ -6,7 +6,7 @@
   import { GetClient } from "../js/hydrus-connection.js";
   import { ShowError } from "../js/stores.js";
 
-  export let tags = ["green"];
+  export let tags = ["landscape"];
   let tag_input = "";
 
   function addTag() {

@@ -2,10 +2,7 @@
   import { Client } from "async-hydrus.js";
 
   import { onMount } from "svelte";
-  import {
-    GetClient,
-    required_permissions,
-  } from "../js/hydrus-connection.js";
+  import { GetClient, required_permissions } from "../js/hydrus-connection.js";
   import { ShowError, Connected } from "../js/stores.js";
 
   let address = "http://127.0.0.1:45869";
