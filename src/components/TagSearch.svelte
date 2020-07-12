@@ -26,7 +26,7 @@
   }
 
   function search() {
-    goto("/search/" + JSON.stringify(tags));
+    goto("/tags?q=" + JSON.stringify(tags));
   }
 </script>
 
@@ -84,8 +84,4 @@
     </div>
   </form>
 
-</div>
-
-<div id="results">
-  <h2>Results</h2>
 </div>

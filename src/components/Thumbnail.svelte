@@ -8,6 +8,8 @@
 
   export let max_width = 200;
   export let max_height = 200;
+  export let active = false;
+
   /** @type {Image} */
   let dom_image;
   let image_width, image_height;
@@ -51,6 +53,11 @@
   // }
   .card {
     display: inline-block;
+    transition: border-color 200ms ease, border-width 200ms ease;
+    &.active {
+      border-width: medium;
+      border-color: blue;
+    }
   }
 
   .loading {
@@ -62,7 +69,7 @@
   }
 </style>
 
-<div class="card">
+<div class="card" class:active>
   {#await getThumbnail(file_id)}
     <div class="card-body loading">
       <div class="spinner-border" role="status" aria-hidden="true" />
@@ -73,6 +80,7 @@
     <img
       src={URL.createObjectURL(thumbnail_blob)}
       alt={file_id}
+      id={file_id}
       bind:this={dom_image}
       on:load={setSize}
       on:click={onClick} />

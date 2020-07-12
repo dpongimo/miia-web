@@ -6,6 +6,14 @@ let client;
 /** @type {String[]} */
 let access_keys = [];
 
+export let image_mimes = ["image/jpg", "image/png", "image/gif"];
+
+/**
+ * @param {string} mime 
+ */
+export function IsMIMEAllowed(mime) {
+	return image_mimes.includes(mime);
+}
 
 /** @returns {Client} */
 export function Connect(address, key) {

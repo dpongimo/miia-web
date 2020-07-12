@@ -10,7 +10,13 @@
   */
 export function calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
 
-	const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+  const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
 
-	return { width: srcWidth * ratio, height: srcHeight * ratio };
+  return { width: srcWidth * ratio, height: srcHeight * ratio };
+}
+
+export function timeout(duration, context = this) {
+  return new Promise(function (resolve) {
+    setTimeout(resolve.bind(null, context), duration)
+  });
 }
