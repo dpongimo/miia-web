@@ -18,10 +18,6 @@ jobs:
           npm ci
           npm run export
 
-      - name: Move Build folder
-        run: |
-          mv __sapper_/export build
-
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.4.0
         with:
@@ -32,6 +28,7 @@ jobs:
         with:
           BASE_BRANCH: main
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: build # The folder the action should deploy.
+          FOLDER: __sapper__/export # The folder the action should deploy.
           SSH: true
           SINGLE_COMMIT: true
+          GIT_CONFIG_EMAIL: dpongimo@gmail.com
