@@ -107,10 +107,8 @@
 
   .spinner-border {
     color: white;
-    max-width: 10vw;
-    width: 100%;
-    max-height: 10vh;
-    height: 100%;
+    max-width: 128px;
+    max-height: 128px;
   }
 </style>
 
@@ -120,8 +118,10 @@
       <div class="image current">
         {#if typeof index === 'number'}
           {#await getMetadata(file_ids[index])}
-            <div class="spinner-border" role="status" aria-hidden="true" />
-            <p>Querying {file_ids[index]}'s metadata</p>
+            <div
+              class="spinner-border"
+              role="status"
+              title="Querying {file_ids[index]}'s metadata" />
           {:then metadata}
             <RequestedFile file_id={file_ids[index]} {metadata} />
           {:catch error}

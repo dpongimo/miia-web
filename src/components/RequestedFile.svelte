@@ -15,7 +15,7 @@
   let client;
 
   /** @type {File}*/
-  export let file;
+  export let file = null;
 
   onMount(async () => {
     return () => {
@@ -43,10 +43,8 @@
 <style lang="scss">
   .spinner-border {
     color: white;
-    max-width: 10vw;
-    width: 100%;
-    max-height: 10vh;
-    height: 100%;
+    max-width: 128px;
+    max-height: 128px;
   }
 </style>
 
@@ -54,8 +52,11 @@
 
   {#await getFileURL(file_id)}
 
-    <div class="spinner-border" role="status" aria-hidden="true" />
-    <p>Downloading {file_id}</p>
+    <div
+      class="spinner-border"
+      role="status"
+      title="Downloading {file_id}"
+      aria-hidden="true" />
 
   {:then this_object_url}
 
