@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "sapper dev",
     "build": "sapper build --legacy --basepath miia-web",
-    "export": "sapper export --legacy --basepath miia-web",
+    "export": "sapper export --legacy --basepath miia-web --entry \"/ /tags\"",
     "start": "node __sapper__/build/miia-web"
   },
   "dependencies": {

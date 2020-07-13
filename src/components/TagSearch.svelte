@@ -67,14 +67,14 @@
         on:click|preventDefault={addTag}>
         Add Tag
       </button>
-      <button
+      <a
         class="btn btn-success"
-        type="button"
+        type="search"
         id="search"
         disabled={tags.length === 0}
-        on:click|preventDefault={search}>
+        href="/tags?q={JSON.stringify(tags)}">
         Search
-      </button>
+      </a>
     </div>
     <div id="query" class="row">
       <div id="tags" class="col">
