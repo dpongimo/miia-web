@@ -17,6 +17,9 @@ jobs:
         run: |
           npm ci
           npm run export
+      - name: Add CNAME
+        run: |
+          echo "miia.website" >> __sapper__/export/CNAME
 
       - name: webfactory/ssh-agent
         uses: webfactory/ssh-agent@v0.4.0
@@ -31,3 +34,4 @@ jobs:
           SSH: true
           GIT_CONFIG_NAME: github-pages-deploy
           GIT_CONFIG_EMAIL: dpongimo@gmail.com
+          SINGLE_COMMIT: true
