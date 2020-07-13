@@ -27,6 +27,7 @@ jobs:
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
           BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: __sapper__/export/miia-web # The folder the action should deploy.
+          FOLDER: __sapper__/export # The folder the action should deploy.
           SSH: true
+          GIT_CONFIG_NAME: github-pages-deploy
           GIT_CONFIG_EMAIL: dpongimo@gmail.com
