@@ -2,26 +2,26 @@
 
 a web client for [Hydrus](https://hydrusnetwork.github.io/hydrus/)
 
+Open the webapp at: https://dpongimo.github.io/miia-web/
+
 This project came about as a way to browse your local Hydrus Client on your phone. 
 
 ## For Users
 
 ### Getting Started
 
-`(TODO: Setup GitHub Actions Build for Static Site)`
-
-Miia Web is an in-browser app that connects to your already-installed Hydrus instance via the [Hydrus Client API](https://hydrusnetwork.github.io/hydrus/help/client_api.html). To get started, you'll need to:
+[Miia Web](https://dpongimo.github.io/miia-web/) is an in-browser app that connects to your already-installed Hydrus instance via the [Hydrus Client API](https://hydrusnetwork.github.io/hydrus/help/client_api.html). To get started, you'll need to:
 
 1. Enable the Client API inside Hydrus
 	- `Services` / `Manage Services` / `client api` / `edit`
 	- [x] Allow non-local connections if you want to access it from another computer or your phone
 	- [x] Support CORS headers
-2. Find the IP address of your computer
+2. [Find the Local IP address of your computer](https://www.whatismybrowser.com/detect/what-is-my-local-ip-address)
 	- Windows: Open Powershell or CMD.exe and run `ipconfig`
 	- OSX/*nix: Usually run `ifconfig`
 	- Them, look for the address for the network adapter you use to connect to your home network. The address might look like `192.168.1.142`
 	- You can test it by navigating to `http://your-ip:45869`. You'll know if it works if you get some ASCII art
-3. Open Miia Web and connect to `http://your-ip:45869`
+3. Open [Miia Web](https://dpongimo.github.io/miia-web/) and connect to `http://your-ip:45869`
 4. Generate an API Key from Hydrus
 	- `Services` / `Review Services` / `local` / `client api`
 	- Click `add` / `from api request`
