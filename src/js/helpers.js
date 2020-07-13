@@ -20,3 +20,5 @@ export function timeout(duration, context = this) {
     setTimeout(resolve.bind(null, context), duration)
   });
 }
+
+export const url_root = process.env.NODE_ENV === "development" ? '/' : '/miia-web/';

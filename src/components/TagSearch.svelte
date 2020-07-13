@@ -6,6 +6,8 @@
   import { GetClient } from "../js/hydrus-connection.js";
   import { ShowError } from "../js/stores.js";
 
+  import { url_root } from "../js/helpers.js";
+
   export let tags = ["landscape"];
   let tag_input = "";
 
@@ -26,7 +28,7 @@
   }
 
   export let onSearch = (tags) => {
-    goto(`/tags?q=${JSON.stringify(tags)}`);
+    goto(`${url_root}tags?q=${JSON.stringify(tags)}`);
   };
 </script>
 
