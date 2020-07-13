@@ -25,9 +25,9 @@
     tags = tags;
   }
 
-  function search() {
-    goto("/tags?q=" + JSON.stringify(tags));
-  }
+  export let onSearch = (tags) => {
+    goto(`/tags?q=${JSON.stringify(tags)}`);
+  };
 </script>
 
 <style lang="scss">
@@ -35,8 +35,14 @@
 </style>
 
 <div id="search">
-  <h2>Search</h2>
-  <form>
+  <form
+    on:submit|preventDefault={() => {
+      if (tag_input.length > 0) {
+        addTag();
+      } else {
+        onSearch(tags);
+      }
+    }}>
     <div class="input-group">
       {#each tags as tag}
         <button
@@ -53,28 +59,20 @@
       <input
         type="text"
         class="form-control"
-        placeholder="tag:to-add"
+        placeholder="tag:to add"
         aria-label="Tag to add to search query"
         aria-describedby="add-tag"
         bind:value={tag_input} />
       <button
         class="btn"
+        class:btn-success={tag_input.length === 0 && tags.length > 0}
         class:btn-primary={tag_input.length > 0}
-        class:btn-outline-secondary={tag_input.length === 0}
-        disabled={tag_input.length === 0}
-        type="button"
-        id="add-tag"
-        on:click|preventDefault={addTag}>
-        Add Tag
-      </button>
-      <a
-        class="btn btn-success"
-        type="search"
+        class:disabled={tag_input.length === 0 && tags.length === 0}
+        type="submit"
         id="search"
-        disabled={tags.length === 0}
-        href="/tags?q={JSON.stringify(tags)}">
-        Search
-      </a>
+        disabled={tags.length === 0 && tag_input.length === 0}>
+        {tag_input.length > 0 ? 'Add Tag' : 'Search'}
+      </button>
     </div>
     <div id="query" class="row">
       <div id="tags" class="col">

@@ -8,10 +8,13 @@
 
   /** @type {string[]} */
   export let file_ids = [];
+  let old_files_ids = [];
   /** How far should each batch load */
   export let range = 10;
   /** What is the current file open? */
   export let index = 0;
+  /** Last index observed to help detect when a scroll event needs to fire */
+  let last_index = 0;
 
   /** @type {string[]} */
   let loaded_file_ids = [];
@@ -28,11 +31,13 @@
   /** @type {Element} */
   let dom_next_batch;
 
-  // $: {
-  //   if (file_ids.length > 0 && loaded_file_ids.length === 0) {
-  //     loadNextBatch();
-  //   }
-  // }
+  // Reload if the file_ids array changes
+  $: {
+    if (file_ids !== old_files_ids) {
+      old_files_ids = file_ids;
+      loaded_file_ids = [];
+    }
+  }
 
   $: {
     if (furthest_index >= loaded_file_ids.length - 2 && file_ids.length > 0) {
@@ -49,13 +54,15 @@
   }
 
   $: {
-    if (file_ids.length > 0) {
-      if (dom_thumbnail_refs && dom_thumbnail_refs[index])
+    if (file_ids.length > 0 && index !== last_index) {
+      if (dom_thumbnail_refs && dom_thumbnail_refs[index]) {
+        last_index = index;
         dom_thumbnail_refs[index].scrollIntoView({
           behavior: "smooth",
           block: "center",
           inline: "center",
         });
+      }
     }
   }
 

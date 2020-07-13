@@ -3,12 +3,16 @@
   import { GetClient } from "../js/hydrus-connection.js";
 
   import ThumbnailGallery from "../components/ThumbnailGallery.svelte";
+  import TagSearch from "../components/TagSearch.svelte";
 
   /** @type {string[]} */
   let file_ids = [];
 
   /** @type {string[]} */
   let tags = [];
+
+  /** @type {Element} */
+  let dom_tags;
 
   let client;
   let start, end;
@@ -23,11 +27,6 @@
       const tentative_tags = JSON.parse(tags_string);
       // Little bit of type safety to prevent dumbass users
       tags = tentative_tags;
-      console.log(tags);
-      (async () => {
-        const new_file_ids = await searchFiles(tags);
-        file_ids = new_file_ids["file_ids"];
-      })();
     }
 
     const id_string = url_params.get("id");
@@ -35,15 +34,22 @@
     }
   });
 
-  async function searchFiles(target_tags) {
-    const client = GetClient();
-    return await client.search_files(target_tags, true, true);
+  async function updateTagSearch(tags_to_search) {
+    if (dom_tags) {
+      const client = GetClient();
+      const new_file_ids = await client.search_files(
+        tags_to_search,
+        true,
+        true
+      );
+      file_ids = new_file_ids["file_ids"];
+    }
   }
 
-  // async function getThumbnail(file_id) {
-  //   if (!client) client = GetClient();
-  //   return await client.get_thumbnail({ file_id });
-  // }
+  $: {
+    console.log("update!!");
+    updateTagSearch(tags);
+  }
 </script>
 
 <style lang="scss">
@@ -52,10 +58,25 @@
 
 <h1>Search Results for</h1>
 
-<div class="tags">
-  {#each tags as tag}
-    <span type="button" class="btn btn-secondary btn-sm">{tag}</span>
-  {/each}
+<div class="tags" bind:this={dom_tags} />
+
+<div class="card">
+  <details>
+    <summary class="card-header">
+      <span>Search:</span>
+      {#each tags as tag}
+        <span type="button" class="btn btn-secondary btn-sm">{tag}</span>
+      {/each}
+    </summary>
+    <div class="card-body">
+      <TagSearch
+        {tags}
+        onSearch={(new_tags) => {
+          console.log('tags set');
+          tags = new_tags;
+        }} />
+    </div>
+  </details>
 </div>
 
-<ThumbnailGallery {file_ids} />
+<ThumbnailGallery bind:file_ids />
