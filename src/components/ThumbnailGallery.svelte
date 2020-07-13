@@ -1,19 +1,28 @@
 <script>
-  import { onMount } from "svelte";
+  import { onMount, tick } from "svelte";
+
+  import { timeout } from "../js/helpers.js";
 
   import Thumbnail from "./Thumbnail.svelte";
   import Lightbox from "./Lightbox.svelte";
 
   /** @type {string[]} */
   export let file_ids = [];
+  let old_files_ids = [];
+  /** How far should each batch load */
+  export let range = 10;
+  /** What is the current file open? */
+  export let index = 0;
+  /** Last index observed to help detect when a scroll event needs to fire */
+  let last_index = 0;
 
-  // TODO: Dynamically paginate the results
   /** @type {string[]} */
   let loaded_file_ids = [];
   /** @type {Element[]} */
   let dom_thumbnail_refs = [];
-  export let range = 10;
-  export let index = 0;
+  /** @type {Element} */
+  let dom_gallery;
+
   let furthest_index = 0;
   let lightbox_enabled = false;
 
@@ -22,16 +31,21 @@
   /** @type {Element} */
   let dom_next_batch;
 
-  // $: {
-  //   if (file_ids.length > 0 && loaded_file_ids.length === 0) {
-  //     loadNextBatch();
-  //   }
-  // }
+  // Reload if the file_ids array changes
+  $: {
+    if (file_ids !== old_files_ids) {
+      old_files_ids = file_ids;
+      loaded_file_ids = [];
+    }
+  }
 
   $: {
     if (furthest_index >= loaded_file_ids.length - 2 && file_ids.length > 0) {
-      console.log(furthest_index, loaded_file_ids.length);
-      loadNextBatch();
+      if (loaded_file_ids.length === 0) {
+        preloadEnoughBatches();
+      } else {
+        loadNextBatch();
+      }
     }
   }
 
@@ -40,13 +54,15 @@
   }
 
   $: {
-    if (file_ids.length > 0) {
-      if (dom_thumbnail_refs && dom_thumbnail_refs[index])
+    if (file_ids.length > 0 && index !== last_index) {
+      if (dom_thumbnail_refs && dom_thumbnail_refs[index]) {
+        last_index = index;
         dom_thumbnail_refs[index].scrollIntoView({
           behavior: "smooth",
           block: "center",
           inline: "center",
         });
+      }
     }
   }
 
@@ -61,10 +77,6 @@
       }
     });
     next_batch_observer.observe(dom_next_batch);
-
-    // setTimeout(() => {
-    //   loadNextBatch();
-    // }, 1000);
 
     return () => {
       next_batch_observer.disconnect();
@@ -81,6 +93,14 @@
       );
       loaded_file_ids = loaded_file_ids.concat(next_segment);
       // furthest_index += range;
+    }
+  }
+
+  async function preloadEnoughBatches() {
+    while (dom_gallery.scrollHeight < window.innerHeight) {
+      loadNextBatch();
+      await tick();
+      await timeout(200);
     }
   }
 </script>
@@ -107,7 +127,7 @@
   bind:enabled={lightbox_enabled}
   bind:file_ids={loaded_file_ids} />
 
-<div class="gallery">
+<div class="gallery" bind:this={dom_gallery}>
   {#each loaded_file_ids as this_id, i (this_id)}
     <div class="entry" bind:this={dom_thumbnail_refs[i]}>
       <Thumbnail

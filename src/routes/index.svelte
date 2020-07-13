@@ -22,4 +22,6 @@
 
 <Setup />
 
+<h2>Search</h2>
+
 <TagSearch />
