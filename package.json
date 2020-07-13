@@ -3,11 +3,15 @@
   "description": "A PWA client for Hydrus",
   "version": "0.1.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dpongimo/miia-web.git"
+  },
   "scripts": {
     "dev": "sapper dev",
-    "build": "sapper build --legacy --basepath miia-web",
-    "export": "sapper export --legacy --basepath miia-web --entry \"/ /tags\"",
-    "start": "node __sapper__/build/miia-web"
+    "build": "sapper build --legacy",
+    "export": "sapper export --legacy --entry \"/ /tags\"",
+    "start": "node __sapper__/build"
   },
   "dependencies": {
     "bootstrap": "^5.0.0-alpha1",
