@@ -110,6 +110,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
     width: 100%;
     position: absolute;
     min-height: 300px;
@@ -139,11 +140,33 @@
         }} />
     </div>
   {/each}
-  <div class="next-batch-placeholder" bind:this={dom_next_batch}>
-    <div
-      class="alert alert-primary d-flex align-items-center"
-      on:click={loadNextBatch}>
-      <span>Loaded {loaded_file_ids.length} / {file_ids.length}</span>
+  <div class="next-batch-placeholder text-center" bind:this={dom_next_batch}>
+    <div class="container">
+      <div class="row">
+        <div class="col col-12">
+          <p>Loaded {loaded_file_ids.length} / {file_ids.length}</p>
+          <div class="progress">
+            <div
+              class="progress-bar"
+              role="progressbar"
+              style="width: {(loaded_file_ids.length / file_ids.length) * 100}%;"
+              aria-valuenow={loaded_file_ids.length}
+              aria-valuemin="0"
+              aria-valuemax={file_ids.length}>
+              {loaded_file_ids.length}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <button
+          class="btn btn-primary m-3"
+          on:click|preventDefault={loadNextBatch}>
+          Load More
+        </button>
+      </div>
     </div>
   </div>
+
 </div>

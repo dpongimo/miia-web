@@ -106,103 +106,105 @@
 
 </style>
 
-{#if !address_validated}
-  <form id="connect-address input-group" on:submit|preventDefault={connect}>
-    <label for="url-input" class="form-label">Hydrus Client URL</label>
-    <div class="input-group">
-      <input
-        id="url-input"
-        class="form-control"
-        type="url"
-        aria-describedby="url-help"
-        bind:value={address} />
+<section class="container">
+  {#if !address_validated}
+    <form id="connect-address input-group" on:submit|preventDefault={connect}>
+      <label for="url-input" class="form-label">Hydrus Client URL</label>
+      <div class="input-group">
+        <input
+          id="url-input"
+          class="form-control"
+          type="url"
+          aria-describedby="url-help"
+          bind:value={address} />
 
-      <button
-        on:click={connect}
-        class="btn btn-primary"
-        type="submit"
-        class:disabled={connecting}
-        disabled={connecting}>
-        Connect
-      </button>
+        <button
+          on:click={connect}
+          class="btn btn-primary"
+          type="submit"
+          class:disabled={connecting}
+          disabled={connecting}>
+          Connect
+        </button>
 
-    </div>
-    <div id="url-help" class="form-text">
-      The IP address or domain and port of your Hydrus Client
-    </div>
-  </form>
-  {#if connecting}
-    <div class="alert alert-primary d-flex align-items-left" role="alert">
-      <div class="spinner-border" role="status" aria-hidden="true" />
-      {#if !address_validated}
-        <p>
-          Connecting to
-          <strong>{address}</strong>
-          ...
-        </p>
-      {/if}
-      {#if !key_validated && !!selected_key}
-        <p>Validating key...</p>
-      {/if}
-    </div>
+      </div>
+      <div id="url-help" class="form-text">
+        The IP address or domain and port of your Hydrus Client
+      </div>
+    </form>
+    {#if connecting}
+      <div class="alert alert-primary d-flex align-items-left" role="alert">
+        <div class="spinner-border" role="status" aria-hidden="true" />
+        {#if !address_validated}
+          <p>
+            Connecting to
+            <strong>{address}</strong>
+            ...
+          </p>
+        {/if}
+        {#if !key_validated && !!selected_key}
+          <p>Validating key...</p>
+        {/if}
+      </div>
+    {/if}
+    {#if show_error.length > 0}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <h4 class="alert-heading">
+          Error {address_validated ? 'while validating your key' : 'while connecting'}
+        </h4>
+
+        <hr />
+        <code class="mb-0">{show_error}</code>
+
+        <button
+          type="button"
+          class="close"
+          data-dismiss="alert"
+          aria-label="Close"
+          on:click={() => {
+            show_error = '';
+          }}>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    {/if}
+  {:else if !key_validated}
+    <form
+      id="connect-key"
+      on:submit|preventDefault={() => {
+        if (entered_key) {
+          selected_key = entered_key;
+          validateKey();
+        } else {
+          requestSessionKey();
+        }
+      }}>
+      <label for="key-input" class="form-label">Hydrus Client URL</label>
+      <div class="input-group">
+        {#if !selected_key}
+          <div class="request-new-key">
+            <button class="btn btn-primary" on:click={requestSessionKey}>
+              Request Temporary Key
+            </button>
+          </div>
+        {/if}
+        <input
+          id="key-input"
+          class="form-control"
+          type="password"
+          aria-describedby="key-help"
+          bind:value={entered_key} />
+        <button
+          class="btn"
+          class:btn-secondary={!selected_key}
+          class:btn-primary={!!selected_key}
+          type="submit">
+          Validate Key
+        </button>
+      </div>
+      <div id="key-help" class="form-text">
+        The generated API key from your Hydrus Client
+      </div>
+    </form>
   {/if}
-  {#if show_error.length > 0}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-      <h4 class="alert-heading">
-        Error {address_validated ? 'while validating your key' : 'while connecting'}
-      </h4>
-
-      <hr />
-      <code class="mb-0">{show_error}</code>
-
-      <button
-        type="button"
-        class="close"
-        data-dismiss="alert"
-        aria-label="Close"
-        on:click={() => {
-          show_error = '';
-        }}>
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-  {/if}
-{:else if !key_validated}
-  <form
-    id="connect-key"
-    on:submit={() => {
-      if (entered_key) {
-        selected_key = entered_key;
-        validateKey();
-      } else {
-        requestSessionKey();
-      }
-    }}>
-    <label for="key-input" class="form-label">Hydrus Client URL</label>
-    <div class="input-group">
-      {#if !selected_key}
-        <div class="request-new-key">
-          <button class="btn btn-primary" on:click={requestSessionKey}>
-            Request Temporary Key
-          </button>
-        </div>
-      {/if}
-      <input
-        id="key-input"
-        class="form-control"
-        type="password"
-        aria-describedby="key-help"
-        bind:value={entered_key} />
-      <button
-        class="btn"
-        class:btn-secondary={!selected_key}
-        class:btn-primary={!!selected_key}
-        type="submit">
-        Validate Key
-      </button>
-    </div>
-    <div id="key-help" class="form-text">
-      The generated API key from your Hydrus Client
-    </div>
-  </form>
-{/if}
+</section>
