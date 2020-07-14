@@ -35,6 +35,9 @@
   $: {
     if (file_ids !== old_files_ids) {
       old_files_ids = file_ids;
+      furthest_index = 0;
+      index = 0;
+      last_index = 0;
       loaded_file_ids = [];
     }
   }
@@ -162,6 +165,7 @@
       <div class="col">
         <button
           class="btn btn-primary m-3"
+          disabled={loaded_file_ids.length >= file_ids.length}
           on:click|preventDefault={loadNextBatch}>
           Load More
         </button>
