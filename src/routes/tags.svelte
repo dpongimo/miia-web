@@ -64,7 +64,7 @@
         <summary class="card-header" bind:this={dom_tags}>
           <span>Search:</span>
           {#each tags as tag}
-            <span type="button" class="btn btn-secondary btn-sm">{tag}</span>
+            <span class="badge bg-secondary">{tag}</span>
           {/each}
         </summary>
         <div class="card-body">

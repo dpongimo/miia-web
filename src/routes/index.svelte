@@ -8,6 +8,9 @@
 
   let connected = false;
   let tabs = [];
+
+  let address_validated = false;
+  let key_validated = false;
 </script>
 
 <style lang="scss">
@@ -26,7 +29,24 @@
 
 <PageSection>
   <div class="col col-12">
-    <Setup />
+    <div class="card">
+      <details>
+        <summary class="card-header">
+          <span>Connect to Hydrus</span>
+          {#if address_validated}
+            <span class="badge bg-secondary">Connected</span>
+          {:else}
+            <span class="badge bg-danger">Not Connected</span>
+          {/if}
+          {#if key_validated}
+            <span class="badge bg-secondary">Authenticated</span>
+          {:else}
+            <span class="badge bg-danger">Not Authenticated</span>
+          {/if}
+        </summary>
+        <Setup bind:address_validated bind:key_validated />
+      </details>
+    </div>
   </div>
   <div class="col col-12">
     <h2>New Search</h2>
