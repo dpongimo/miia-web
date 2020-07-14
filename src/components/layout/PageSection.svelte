@@ -20,7 +20,7 @@
   /** @type {string} */
   export let justify = undefined;
   /** @type {string} */
-  export let page_padding = "10vh";
+  export let page_padding = "6rem";
 
   /** @type {Element} */
   let dom_video;
