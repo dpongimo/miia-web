@@ -170,7 +170,7 @@
 {:else if !key_validated}
   <form
     id="connect-key"
-    on:submit={() => {
+    on:submit|preventDefault={() => {
       if (entered_key) {
         selected_key = entered_key;
         validateKey();
