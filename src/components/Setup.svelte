@@ -32,6 +32,7 @@
     const local_key_json = localStorage.getItem("access_key");
     if (local_key_json) {
       selected_key = JSON.parse(local_key_json);
+      entered_key = JSON.parse(local_key_json);
     }
     (async () => {
       if (!!local_address_json) {
@@ -175,7 +176,7 @@
         class:is-valid={key_validated}
         type="password"
         aria-describedby="key-help"
-        on:blur={() => {
+        on:change={() => {
           key_validated = false;
         }}
         bind:value={entered_key} />
