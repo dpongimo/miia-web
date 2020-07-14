@@ -34,7 +34,7 @@
 
 </style>
 
-<div id="search">
+<section id="search" class="container">
   <form
     on:submit|preventDefault={() => {
       if (tag_input.length > 0) {
@@ -81,5 +81,4 @@
       <div id="action" class="col-auto text-center" />
     </div>
   </form>
-
-</div>
+</section>
