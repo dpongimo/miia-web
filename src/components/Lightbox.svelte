@@ -57,34 +57,39 @@
     bottom: 0;
     left: 0;
     right: 0;
-    width: 100%;
-    height: 100%;
+    width: var(--window-width);
+    height: var(--window-height);
     background-color: rgba(0, 0, 0, 0.9);
-    z-index: 1;
-    .images {
+    z-index: 10;
+    .files {
       display: flex;
       justify-content: center;
       align-items: center;
       position: absolute;
       width: 100%;
       height: 100%;
-      .image {
-        max-width: 100vw;
-        max-height: 100vh;
+      .file {
+        position: relative;
+        max-width: var(--window-width);
+        max-height: var(--window-height);
+        overflow: scroll scroll;
+        scrollbar-width: thin;
       }
     }
   }
 
   .nav-buttons {
-    z-index: 1;
+    z-index: 11;
     position: absolute;
     top: 0;
     height: 100%;
-    background: none;
     border: none;
-    padding: 0 10vw;
+    padding: 0 2.5vw;
     opacity: 0.2;
     transition: opacity 200ms linear;
+    background: rgb(0, 0, 0);
+
+    $gradient: rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 100%;
 
     &:hover {
       opacity: 1;
@@ -92,14 +97,16 @@
 
     &#previous {
       left: 0;
+      background: linear-gradient(90deg, $gradient);
     }
     &#next {
       right: 0;
+      background: linear-gradient(270deg, $gradient);
     }
   }
 
   .close {
-    z-index: 1;
+    z-index: 11;
     position: absolute;
     top: 32px;
     right: 32px;
@@ -114,8 +121,8 @@
 
 {#if enabled}
   <div class="background">
-    <div class="images">
-      <div class="image current">
+    <div class="files">
+      <div class="file current">
         {#if typeof index === 'number'}
           {#await getMetadata(file_ids[index])}
             <div

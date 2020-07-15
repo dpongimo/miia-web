@@ -24,9 +24,10 @@
     //   rgba(0, 0, 0, 0) 0,
     //   rgba(0, 0, 0, 0.75) 100%
     // );
+    background: rgba(255, 255, 255, 0.5);
     width: 100%;
     position: fixed;
-    z-index: 100;
+    z-index: 5;
     top: 0;
     padding: 1rem;
     .nav-link {
