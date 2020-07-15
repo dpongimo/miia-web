@@ -7,13 +7,14 @@
   import { space } from "svelte/internal";
 
   /** From DOM Input */
-  let address = "http://127.0.0.1:45869";
+  let address = "https://127.0.0.1:45869";
   let selected_key = "";
   /** From DOM Input */
   let entered_key = "";
   /** State */
   let connecting = false;
-  /** Error string
+  /** 
+   * Last connection observed
    * @type {Error}
    */
   let error_ref = undefined;

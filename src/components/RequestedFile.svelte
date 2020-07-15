@@ -46,6 +46,10 @@
     max-width: 128px;
     max-height: 128px;
   }
+
+  .img-fluid {
+    max-height: 100%;
+  }
 </style>
 
 {#if typeof metadata === 'object' && IsMIMEAllowed(metadata.mime)}
