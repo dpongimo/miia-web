@@ -1,60 +1,78 @@
 <script>
-	export let segment;
+  export let segment;
 </script>
 
-<style>
-	nav {
-		border-bottom: 1px solid rgba(255,62,0,0.1);
-		font-weight: 300;
-		padding: 0 1em;
-	}
+<style lang="scss">
+  %link-style {
+    // font-weight: 300;
+    letter-spacing: 0.2rem;
+    font-size: 1.25rem;
+    color: var(--bs-secondary);
+    // text-shadow: 0 1px rgba(0, 0, 0, 0.5);
+    transition: text-shadow 100ms linear;
+		text-decoration: none !important;
+    &:hover {
+      // text-shadow: 0 4px rgba(0, 0, 0, 0.5);
+      text-decoration: none;
+    }
+    &:focus {
+      outline: none;
+    }
+  }
 
-	ul {
-		margin: 0;
-		padding: 0;
-	}
-
-	/* clearfix */
-	ul::after {
-		content: '';
-		display: block;
-		clear: both;
-	}
-
-	li {
-		display: block;
-		float: left;
-	}
-
-	[aria-current] {
-		position: relative;
-		display: inline-block;
-	}
-
-	[aria-current]::after {
-		position: absolute;
-		content: '';
-		width: calc(100% - 1em);
-		height: 2px;
-		background-color: rgb(255,62,0);
-		display: block;
-		bottom: -1px;
-	}
-
-	a {
-		text-decoration: none;
-		padding: 1em 0.5em;
-		display: block;
-	}
+  nav {
+    // background: linear-gradient(
+    //   0deg,
+    //   rgba(0, 0, 0, 0) 0,
+    //   rgba(0, 0, 0, 0.75) 100%
+    // );
+    width: 100%;
+    position: fixed;
+    z-index: 100;
+    top: 0;
+    padding: 1rem;
+    .nav-link {
+      transition: opacity 500ms linear;
+      a {
+        @extend %link-style;
+        position: relative;
+        &:after {
+          // Creates a border-bottom
+          transition: box-shadow 500ms linear, opacity 500ms linear;
+          box-shadow: none;
+          background-color: var(--bs-primary);
+					opacity: 0;
+          bottom: -4px;
+          content: "";
+          display: block;
+          height: 1px;
+          left: 50%;
+          position: absolute;
+          transform: translate(-50%, 0);
+          width: 60%;
+        }
+      }
+      &.active a:after {
+        box-shadow: 0 1px 0 rgba($color: black, $alpha: 0.5);
+        opacity: 1;
+      }
+    }
+  }
+  :global(.start-hidden) {
+    opacity: 0;
+    visibility: collapse;
+  }
 </style>
 
-<nav>
-	<ul>
-		<li><a aria-current="{segment === undefined ? 'page' : undefined}" href=".">home</a></li>
-		<li><a aria-current="{segment === 'about' ? 'page' : undefined}" href="about">about</a></li>
-
-		<!-- for the blog link, we're using rel=prefetch so that Sapper prefetches
-		     the blog data when we hover over the link or tap it on a touchscreen -->
-		<li><a rel=prefetch aria-current="{segment === 'blog' ? 'page' : undefined}" href="blog">blog</a></li>
-	</ul>
+<nav class="" role="navigation">
+  <div class="nav flex-sm-row">
+    <div class="nav-link col-xs-auto mr-auto">
+      <a href="." class="">
+        <img src="" alt="Miia Web!" height="30px" class="" />
+      </a>
+    </div>
+    <div class="nav-link col-xs-auto" class:active={segment === 'tags'}>
+      <a class="align-middle" href="/tags">Tag Search</a>
+    </div>
+  </div>
 </nav>
