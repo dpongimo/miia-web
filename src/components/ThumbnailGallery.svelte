@@ -26,46 +26,40 @@
   let furthest_index = 0;
   let lightbox_enabled = false;
 
+  // TODO: Replace with database
   let file_data = new Map();
 
   /** @type {Element} */
   let dom_next_batch;
 
   // Reload if the file_ids array changes
-  $: {
-    if (file_ids !== old_files_ids) {
-      old_files_ids = file_ids;
-      furthest_index = 0;
-      index = 0;
-      last_index = 0;
-      loaded_file_ids = [];
+  $: if (file_ids !== old_files_ids) {
+    reset();
+  }
+
+  // Preload the next batches if the user has progressed far enough
+  $: if (furthest_index >= loaded_file_ids.length - 2 && file_ids.length > 0) {
+    // If this is the first preload, fill the screen
+    if (loaded_file_ids.length === 0) {
+      preloadEnoughBatches();
+    } else {
+      loadNextBatch();
     }
   }
 
-  $: {
-    if (furthest_index >= loaded_file_ids.length - 2 && file_ids.length > 0) {
-      if (loaded_file_ids.length === 0) {
-        preloadEnoughBatches();
-      } else {
-        loadNextBatch();
-      }
-    }
-  }
+  // Keep track of the furthest the user has been
+  $: furthest_index = Math.max(index, furthest_index);
 
-  $: {
-    furthest_index = Math.max(index, furthest_index);
-  }
-
-  $: {
-    if (file_ids.length > 0 && index !== last_index) {
-      if (dom_thumbnail_refs && dom_thumbnail_refs[index]) {
-        last_index = index;
-        dom_thumbnail_refs[index].scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-          inline: "center",
-        });
-      }
+  // Scroll to the current index if the index is adjusted independantly
+  $: if (file_ids.length > 0 && index !== last_index) {
+    // But only do it client side
+    if (dom_thumbnail_refs && dom_thumbnail_refs[index]) {
+      last_index = index;
+      dom_thumbnail_refs[index].scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "center",
+      });
     }
   }
 
@@ -85,6 +79,15 @@
       next_batch_observer.disconnect();
     };
   });
+
+  function reset() {
+    // These reset the same state of the gallery
+    old_files_ids = file_ids;
+    furthest_index = 0;
+    index = 0;
+    last_index = 0;
+    loaded_file_ids = [];
+  }
 
   function loadNextBatch() {
     if (file_ids.length > 0 && file_ids.length !== loaded_file_ids.length) {

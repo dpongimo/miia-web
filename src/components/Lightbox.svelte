@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { GetClient } from "../js/hydrus-connection.js";
+  import { GetMetadataTable, cleanMetadata } from "../js/local-database.js";
 
   import RequestedFile from "./RequestedFile.svelte";
 
@@ -25,16 +26,23 @@
    * @param {string} file_id
    */
   async function getMetadata(file_id) {
-    if (cached_metadata.has(file_id)) {
-      return cached_metadata.get(file_id);
-    } else {
-      if (!client) client = GetClient();
-      const { metadata } = await client.get_file_metadata({
-        file_ids: [file_id],
-      });
-      cached_metadata.set(file_id, metadata[0]);
-      return metadata[0];
-    }
+    const db = {};
+    db.files = GetMetadataTable();
+    // if (cached_metadata.has(file_id)) {
+
+    //   return cached_metadata.get(file_id);
+    // } else {
+    if (!client) client = GetClient();
+    const data = await client.get_file_metadata({
+      file_ids: [file_id],
+    });
+    const metadata = cleanMetadata(data.metadata[0]);
+    db.files.put(metadata, [file_id])
+    
+    // const result = await db.files.where({ file_id });
+    // cached_metadata.set(file_id, metadata[0]);
+    return metadata;
+    // }
   }
 
   function setURLIndex(file_id) {

@@ -6,7 +6,12 @@ let client;
 /** @type {String[]} */
 let access_keys = [];
 
-export let image_mimes = ["image/jpg", "image/png", "image/gif"];
+export const image_mimes = ["image/jpg", "image/png", "image/gif"];
+
+export const required_permissions = [
+	Client.PERMISSIONS.SEARCH_FILES,
+	Client.PERMISSIONS.MANAGE_PAGES
+]
 
 /**
  * @param {string} mime 
@@ -52,7 +57,3 @@ export function GetCachedKey() {
 	}
 }
 
-export const required_permissions = [
-	Client.PERMISSIONS.SEARCH_FILES,
-	Client.PERMISSIONS.MANAGE_PAGES
-]
