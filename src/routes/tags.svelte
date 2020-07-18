@@ -79,6 +79,10 @@
   }
 </script>
 
+<svelte:head>
+  <title>{tags.join(", ")} - Miia Web!</title>
+</svelte:head>
+
 <style lang="scss">
 
 </style>

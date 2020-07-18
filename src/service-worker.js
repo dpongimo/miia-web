@@ -67,6 +67,11 @@ self.addEventListener('fetch', event => {
 		caches
 			.open(`offline${timestamp}`)
 			.then(async cache => {
+				// Reply with cached files immediately as file request urls are immutable
+				if (url.pathname.includes("get_files/file")) {
+					const response = await cache.match(event.request);
+					if (response) return response;
+				}
 				try {
 					const response = await fetch(event.request);
 					cache.put(event.request, response.clone());
