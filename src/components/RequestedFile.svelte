@@ -41,7 +41,7 @@
     return object_url;
   }
 
-  $: console.log(enabled, file_id);
+  // $: console.log(enabled, file_id);
 </script>
 
 <style lang="scss">

@@ -5,7 +5,7 @@ export const metadata_table = "files";
 export const db_version = 1;
 
 /**
- * 
+ * Dexie schema definition
  */
 export const schema = {
 	files: '&file_id, hash, *user_tags, *service_names_to_statuses_to_tags.all_known_tags'
