@@ -16,6 +16,8 @@
   "dependencies": {
     "bootstrap": "^5.0.0-alpha1",
     "compression": "^1.7.4",
+    "dexie": "^3.0.1",
+    "lightgallery.js": "^1.2.0",
     "polka": "next",
     "sirv": "^1.0.1"
   },

@@ -1,6 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import { GetClient } from "../js/hydrus-connection.js";
+  import { GetMetadataTable, cleanMetadata } from "../js/local-database.js";
 
   import ThumbnailGallery from "../components/ThumbnailGallery.svelte";
   import TagSearch from "../components/TagSearch.svelte";
@@ -15,11 +16,15 @@
   /** @type {Element} */
   let dom_tags;
 
+  /** Is the page ready to query? */
+  let ready = false;
+
   let client;
   let start, end;
   let first_id;
 
   onMount(() => {
+    ready = true;
     const query_string = window.location.search;
     const url_params = new URLSearchParams(query_string);
     const tags_string = url_params.get("q");
@@ -30,21 +35,42 @@
       tags = tentative_tags;
     }
 
+    // Jump to the ?id= tag for resuming a search
     const id_string = url_params.get("id");
     if (id_string) {
     }
   });
 
   async function updateTagSearch(tags_to_search) {
-    if (dom_tags) {
+    if (ready) {
       const client = GetClient();
       const new_file_ids = await client.search_files(
         tags_to_search,
         true,
         true
       );
-      console.log("Recieved ", file_ids.length, " files.");
       file_ids = new_file_ids["file_ids"];
+      console.log("Recieved ", file_ids.length, " files.");
+      await loadMetadata(file_ids);
+    }
+  }
+
+  async function loadMetadata(file_ids_to_search) {
+    if (ready) {
+      const client = GetClient();
+      const db = {};
+      db.files = GetMetadataTable();
+      
+      const { metadata: ref_metadata } = await client.get_file_metadata({
+        file_ids: file_ids_to_search,
+      });
+
+      const metadata = [];
+      for (const this_metadata of ref_metadata) {
+        metadata.push(cleanMetadata(this_metadata));
+      }
+
+      await db.files.bulkPut(metadata);
     }
   }
 
@@ -52,6 +78,10 @@
     updateTagSearch(tags);
   }
 </script>
+
+<svelte:head>
+  <title>{tags.join(", ")} - Miia Web!</title>
+</svelte:head>
 
 <style lang="scss">
 

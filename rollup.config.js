@@ -60,6 +60,8 @@ export default {
 				]
 			}),
 
+			// css({ output: 'static/css/bundle.css' }),
+
 			!dev && terser({
 				module: true
 			})
