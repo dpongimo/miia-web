@@ -84,6 +84,34 @@
   }
 
   onMount(() => {});
+
+  // Touch events
+  let touch_start_x: number = null;
+
+  function touchStart(event: UIEvent) {
+    touch_start_x = unifyTouchAndClick(event).clientX;
+  }
+  function touchEnd(event: UIEvent) {
+    if (touch_start_x !== null) {
+      const delta_x = unifyTouchAndClick(event).clientX - touch_start_x;
+      const sign = Math.sign(delta_x);
+
+      if(sign === 0) {
+        // do nothing, was a tap!
+      }
+      else if (Math.sign(delta_x) < 0) {
+        index = Math.min(index + 1, file_ids.length);
+      } else {
+        index = Math.max(index - 1, 0);
+      }
+
+      touch_start_x = null;
+    }
+  }
+
+  function unifyTouchAndClick(event) {
+    return event.changedTouches ? event.changedTouches[0] : event;
+  }
 </script>
 
 <style lang="scss">
@@ -136,6 +164,7 @@
     // max-width: calc(100% / var(--n, 1));
     // height: 100%;
     max-width: var(--window-width);
+    pointer-events: none;
     // max-height: var(--window-height);
   }
 
@@ -188,6 +217,10 @@
       class:contain={current_object_fit === 'contain'}
       class:fill={current_object_fit === 'fill'}
       style="overflow-y: {show_scroll ? 'scroll' : 'hidden'}"
+      on:mousedown|preventDefault={touchStart}
+      on:touchstart|preventDefault={touchStart}
+      on:mouseup={touchEnd}
+      on:touchend|preventDefault={touchEnd}
       bind:this={dom_files}>
       {#each loaded_file_ids as this_id, this_i (this_id)}
         <div
