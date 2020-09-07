@@ -15,8 +15,11 @@
   export let loaded_range = 2;
   // Should the click controls be shown?
   let show_click_controls = true;
+  let current_object_fit: "contain" | "cover" | "fill" = "contain";
+  let show_scroll: boolean = false;
 
   let dom_file_refs: HTMLElement[] = [];
+  let dom_files: HTMLElement;
 
   // $: {
   //   if (file_ids && index !== 0) {
@@ -46,7 +49,34 @@
     }
   }
 
-  $: if (enabled) console.log(index);
+  function cycleObjectFit(event: Event) {
+    if (current_object_fit === "contain") {
+      current_object_fit = "cover";
+    } else if (current_object_fit === "cover") {
+      current_object_fit = "fill";
+    } else {
+      current_object_fit = "contain";
+      dom_files.scroll({
+        top: 0,
+        behavior: "smooth",
+      });
+    }
+    console.log("Fit is now", current_object_fit);
+  }
+
+  $: {
+    if (current_object_fit === "contain") {
+      show_scroll = false;
+    } else {
+      show_scroll = true;
+    }
+  }
+
+  $: if (enabled) {
+    console.log(index);
+    // Reset object fit to contain every time index changes
+    current_object_fit = "contain";
+  }
 
   onMount(() => {});
 </script>
@@ -80,6 +110,18 @@
     transform: translate(calc(var(--i, 0) / var(--n, 1) * -100%));
     transition: transform 0.2s cubic-bezier(0, 0.55, 0.45, 1);
     will-change: transform;
+
+    overflow: hidden;
+    scrollbar-width: thin;
+    &.cover .file.current {
+      max-height: var(--window-height, 100vh);
+    }
+    &.contain .file.current {
+      height: 100%;
+    }
+    &.fill .file.current {
+      min-height: 100%;
+    }
   }
 
   .file {
@@ -87,11 +129,9 @@
     // min-width: 100%;
     width: 100%;
     // max-width: calc(100% / var(--n, 1));
-    height: 100%;
+    // height: 100%;
     max-width: var(--window-width);
     // max-height: var(--window-height);
-    overflow: scroll scroll;
-    scrollbar-width: thin;
   }
 
   .nav-buttons {
@@ -136,15 +176,20 @@
 </style>
 
 {#if enabled}
-  <div
-    class="background"
-    style="--n: max({file_ids.length}, 1); --i: {index};">
-    <div class="files">
+  <div class="background" style="--n: max({file_ids.length}, 1); --i: {index};">
+    <div
+      class="files"
+      class:cover={current_object_fit === 'cover'}
+      class:contain={current_object_fit === 'contain'}
+      class:fill={current_object_fit === 'fill'}
+      style="overflow-y: {show_scroll ? 'scroll' : 'hidden'}"
+      bind:this={dom_files}>
       {#each file_ids as this_id, this_i (this_id)}
         <div
           class="file"
           class:current={index === this_i}
-          bind:this={dom_file_refs[this_i]}>
+          bind:this={dom_file_refs[this_i]}
+          on:dblclick|preventDefault={cycleObjectFit}>
           {#await getMetadata(this_id)}
             <div
               class="spinner-border"
@@ -164,6 +209,7 @@
             <RequestedFile
               file_id={this_id}
               enabled={this_i >= index - loaded_range && this_i <= index + loaded_range}
+              bind:object_fit={current_object_fit}
               {metadata} />
           {:catch error}
             <p style="color: yellow">

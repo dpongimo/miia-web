@@ -10,7 +10,7 @@
   export let metadata = undefined;
   /** API control to load the file */
   export let enabled: boolean = false;
-  export let object_fit: "contain" | "cover" = "contain";
+  export let object_fit: "contain" | "cover" | "fill" = "cover";
   let object_url: string;
 
   let client: Client;
@@ -43,17 +43,8 @@
 </script>
 
 <style lang="scss">
-  .media-container {
+  * {
     color: white;
-    max-height: 100%;
-    max-width: 100%;
-    &.contain {
-      object-fit: contain;
-    }
-
-    &.cover {
-      max-height: none;
-    }
   }
 
   .spinner-border {
@@ -63,68 +54,48 @@
   }
 
   .img-fluid {
-    // width: calc(100% / var(--n, 1));
-    height: 100%;
-    width: 100%;
-    // fallback
-    &.contain {
-      object-fit: contain;
-      max-height: 100%;
-      max-width: 100%;
-    }
-
-    &.cover {
-      max-height: none;
-    }
+    display: block;
+    max-height: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    object-fit: contain;
   }
 </style>
 
 {#if enabled && typeof metadata === 'object' && IsMIMEAllowed(metadata.mime)}
-  <div
-    class="media-container"
-    class:contain={object_fit === 'contain'}
-    class:cover={object_fit === 'cover'}>
-    {#await getFileURL(file_id)}
-      <div
-        class="spinner-border"
-        role="status"
-        title="Downloading {file_id}"
-        aria-hidden="true" />
-      <h4>{file_id}</h4>
-    {:then this_object_url}
-      <!-- <img
+  <!-- <div class="media-container"> -->
+  {#await getFileURL(file_id)}
+    <div
+      class="spinner-border"
+      role="status"
+      title="Downloading {file_id}"
+      aria-hidden="true" />
+    <h4>{file_id}</h4>
+  {:then this_object_url}
+    <!-- <img
         class="img-fluid"
         style="max-height: {scale_mode === 'width+height' ? 'var(--window-height)' : ''}"
         src={this_object_url}
         alt="" /> -->
-      <img
-        class="img-fluid"
-        class:contain={object_fit === 'contain'}
-        class:cover={object_fit === 'cover'}
-        src={this_object_url}
-        on:dblclick|preventDefault={() => {
-          if (object_fit === 'contain') {
-            object_fit = 'cover';
-          } else {
-            object_fit = 'contain';
-          }
-          console.log('Fit is now', object_fit);
-        }}
-        alt="" />
-      <!-- {#if metadata.mime.includes('image')}
+    <img
+      class="img-fluid"
+      style="object-fit: {object_fit}; width: {object_fit === 'fill' ? '100%' : ''}; height: {object_fit === 'fill' ? '100%' : ''};"
+      src={this_object_url}
+      alt="" />
+    <!-- {#if metadata.mime.includes('image')}
       {:else if metadata.mime.includes('video')}
         <video muted loop playsinline autoplay src={this_object_url} />
       {/if} -->
-      <!-- <h5>
+    <!-- <h5>
         <code>{file_id}</code>
       </h5>
       <p>
         Enabled:
         <code>{enabled}</code>
       </p> -->
-    {:catch error}
-      {@debug error}
-      <pre style="color: red">{error.message}</pre>
-    {/await}
-  </div>
+  {:catch error}
+    {@debug error}
+    <pre style="color: red">{error.message}</pre>
+  {/await}
+  <!-- </div> -->
 {/if}

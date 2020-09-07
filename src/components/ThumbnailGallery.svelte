@@ -127,10 +127,7 @@
   }
 </style>
 
-<LightboxV2
-  bind:index
-  bind:enabled={lightbox_enabled}
-  bind:file_ids={loaded_file_ids} />
+<LightboxV2 bind:index bind:enabled={lightbox_enabled} bind:file_ids />
 
 <div class="gallery" bind:this={dom_gallery}>
   {#each loaded_file_ids as this_id, i (this_id)}
@@ -178,5 +175,4 @@
       {/if}
     </div>
   </div>
-
 </div>
