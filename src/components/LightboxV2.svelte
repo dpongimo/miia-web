@@ -22,20 +22,10 @@
   let dom_files: HTMLElement;
 
   let loaded_file_ids: string[] = [];
-  let loaded_files: { file_id: string; file_index: number }[] = [];
   $: loaded_file_ids = file_ids.slice(
     Math.max(index - loaded_range, 0),
     Math.min(index + loaded_range + 1, file_ids.length)
   );
-  $: if (enabled) {
-    loaded_files = [];
-    console.log("redo loaded_files");
-    for (let i = 0; i < loaded_file_ids.length; i++) {
-      const file_id = loaded_file_ids[i];
-      const file_index = i + Math.max(index - loaded_range, 0);
-      loaded_files.push({ file_id, file_index });
-    }
-  }
 
   // $: {
   //   if (file_ids && index !== 0) {
@@ -119,15 +109,15 @@
         index = Math.max(index - 1, 0);
       }
 
-      // transition_x = 0;
+      transition_x = 0;
       touch_start_x = null;
     }
   }
   function drag(event: UIEvent) {
     if (touch_start_x !== null) {
-      // transition_x = Math.round(
-      //   unifyTouchAndClick(event).clientX - touch_start_x
-      // );
+      transition_x = Math.round(
+        unifyTouchAndClick(event).clientX - touch_start_x
+      );
     }
   }
 
@@ -233,18 +223,12 @@
     top: 32px;
     right: 32px;
   }
-
-  .spinner-border {
-    color: white;
-    max-width: 128px;
-    max-height: 128px;
-  }
 </style>
 
 {#if enabled}
   <div
     class="background"
-    style="--n: max({file_ids.length}, 1); --i: {offset_index}; --tx: {transition_x !== null ? transition_x : 0}px">
+    style="--n: max({loaded_file_ids.length}, 1); --i: {offset_index}; --tx: {transition_x !== null ? transition_x : 0}px">
     <div
       class="files"
       class:cover={current_object_fit === 'cover'}
@@ -261,35 +245,18 @@
       on:touchend|preventDefault={touchEnd}
       bind:this={dom_files}>
       <!-- TODO: This should update in a smoother way -->
-      {#each loaded_files as file (file.file_id)}
+      {#each loaded_file_ids as this_id, this_i (this_id)}
         <!-- <div
           class="file"
           class:current={index === (this_i + Math.max(index - loaded_range, 0))}
           > -->
-        <div class="file">
-          {#await getMetadata(file.file_id)}
-            <div
-              class="spinner-border"
-              role="status"
-              title="Querying {file.file_id}'s metadata" />
-          {:then metadata}
-            <!-- <RequestedFile
-              file_id={this_id}
-              enabled={this_i >= index - loaded_range && this_i <= index + loaded_range}
-              bind:object_fit={current_object_fit}
-              {metadata} /> -->
-            <RequestedFile
-              file_id={file.file_id}
-              enabled={true}
-              bind:object_fit={current_object_fit}
-              {metadata} />
-          {:catch error}
-            <p style="color: yellow">
-              From <code>file_ids[{file_ids.length}]</code> : select id <code>{file.file_id}</code>
-            </p>
-            <pre style="color: red">{error.message}</pre>
-            {@debug error}
-          {/await}
+        <div
+          class="file"
+          class:current={index === this_i + Math.max(index - loaded_range, 0)}>
+          <RequestedFile
+            file_id={this_id}
+            enabled={true}
+            bind:object_fit={current_object_fit} />
         </div>
       {/each}
     </div>
@@ -317,7 +284,7 @@
     {/if}
     <button
       class="close"
-      on:click={() => {
+      on:click|preventDefault={() => {
         enabled = false;
       }}>
       ❌
