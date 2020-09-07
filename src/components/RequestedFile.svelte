@@ -5,11 +5,11 @@
   import { GetClient, IsMIMEAllowed } from "../js/hydrus-connection.js";
   import { Client } from "async-hydrus.js";
 
-  export let file_id: number;
+  export let file_id: string;
   /** Metadata returned from Hydrus */
   export let metadata = undefined;
   /** API control to load the file */
-  export let enabled = false;
+  export let enabled: boolean = false;
   export let scale_mode: "width" | "width+height" | "free" = "width+height";
   let object_url: string;
 
@@ -55,38 +55,41 @@
 
   .img-fluid {
     max-height: 100%;
+    max-width: 100%; // fallback
+    // width: calc(100% / var(--n, 1));
   }
 </style>
 
 {#if enabled && typeof metadata === 'object' && IsMIMEAllowed(metadata.mime)}
-  <div class="media-container">
-    {#await getFileURL(file_id)}
-      <div
-        class="spinner-border"
-        role="status"
-        title="Downloading {file_id}"
-        aria-hidden="true" />
-      <h4>{file_id}</h4>
-    {:then this_object_url}
-      <img
+  <!-- <div class="media-container"> -->
+  {#await getFileURL(file_id)}
+    <div
+      class="spinner-border"
+      role="status"
+      title="Downloading {file_id}"
+      aria-hidden="true" />
+    <h4>{file_id}</h4>
+  {:then this_object_url}
+    <!-- <img
         class="img-fluid"
         style="max-height: {scale_mode === 'width+height' ? 'var(--window-height)' : ''}"
         src={this_object_url}
-        alt="" />
-      <!-- {#if metadata.mime.includes('image')}
+        alt="" /> -->
+    <img class="img-fluid" src={this_object_url} alt="" />
+    <!-- {#if metadata.mime.includes('image')}
       {:else if metadata.mime.includes('video')}
         <video muted loop playsinline autoplay src={this_object_url} />
       {/if} -->
-      <!-- <h5>
+    <!-- <h5>
         <code>{file_id}</code>
       </h5>
       <p>
         Enabled:
         <code>{enabled}</code>
       </p> -->
-    {:catch error}
-      {@debug error}
-      <pre style="color: red">{error.message}</pre>
-    {/await}
-  </div>
+  {:catch error}
+    {@debug error}
+    <pre style="color: red">{error.message}</pre>
+  {/await}
+  <!-- </div> -->
 {/if}
