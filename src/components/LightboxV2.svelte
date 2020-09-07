@@ -90,8 +90,8 @@
     height: 100%;
     max-width: var(--window-width);
     // max-height: var(--window-height);
-    // overflow: scroll scroll;
-    // scrollbar-width: thin;
+    overflow: scroll scroll;
+    scrollbar-width: thin;
   }
 
   .nav-buttons {
