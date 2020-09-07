@@ -4,6 +4,7 @@
 
   import { GetClient, IsMIMEAllowed } from "../js/hydrus-connection.js";
   import { Client } from "async-hydrus.js";
+  import { GetMetadataTable } from "../js/local-database.js";
 
   export let file_id: string;
   /** Metadata returned from Hydrus */
@@ -15,11 +16,12 @@
 
   let client: Client;
 
-  export let file: File;
+  export let file: File = undefined;
 
   onMount(() => {
     return () => {
       if (object_url) {
+        console.log("destroy", file_id);
         URL.revokeObjectURL(object_url);
       }
     };
@@ -27,6 +29,7 @@
 
   async function getFileURL(target_id) {
     if (object_url) {
+      console.log("replace", file_id);
       URL.revokeObjectURL(object_url);
     }
 
@@ -36,7 +39,12 @@
       type: metadata.mime,
     });
     object_url = URL.createObjectURL(file);
+    console.log("load", file_id);
     return object_url;
+  }
+  async function getMetadata() {
+    const files = GetMetadataTable();
+    metadata = await files.get({ file_id });
   }
 
   // $: console.log(enabled, file_id);
@@ -62,40 +70,42 @@
   }
 </style>
 
-{#if enabled && typeof metadata === 'object' && IsMIMEAllowed(metadata.mime)}
-  <!-- <div class="media-container"> -->
-  {#await getFileURL(file_id)}
-    <div
-      class="spinner-border"
-      role="status"
-      title="Downloading {file_id}"
-      aria-hidden="true" />
-    <h4>{file_id}</h4>
-  {:then this_object_url}
-    <!-- <img
+{#if enabled}
+  {#if typeof metadata === 'object'}
+    {#await getFileURL(file_id)}
+      <div
+        class="spinner-border"
+        role="status"
+        title="Downloading {file_id}"
+        aria-hidden="true" />
+      <h4>{file_id}</h4>
+    {:then this_object_url}
+      <!-- <img
         class="img-fluid"
         style="max-height: {scale_mode === 'width+height' ? 'var(--window-height)' : ''}"
         src={this_object_url}
         alt="" /> -->
-    <img
-      class="img-fluid"
-      style="object-fit: {object_fit}; width: {object_fit === 'fill' ? '100%' : ''}; height: {object_fit === 'fill' ? '100%' : ''};"
-      src={this_object_url}
-      alt="" />
-    <!-- {#if metadata.mime.includes('image')}
+      <img
+        class="img-fluid"
+        style="object-fit: {object_fit}; width: {object_fit === 'fill' ? '100%' : ''}; height: {object_fit === 'fill' ? '100%' : ''};"
+        src={this_object_url}
+        alt="" />
+      <!-- {#if metadata.mime.includes('image')}
       {:else if metadata.mime.includes('video')}
         <video muted loop playsinline autoplay src={this_object_url} />
       {/if} -->
-    <!-- <h5>
+      <!-- <h5>
         <code>{file_id}</code>
       </h5>
       <p>
         Enabled:
         <code>{enabled}</code>
       </p> -->
-  {:catch error}
-    {@debug error}
-    <pre style="color: red">{error.message}</pre>
-  {/await}
+    {:catch error}
+      {@debug error}
+      <pre style="color: red">{error.message}</pre>
+    {/await}
+  {:else}{getMetadata()}{/if}
+
   <!-- </div> -->
 {/if}

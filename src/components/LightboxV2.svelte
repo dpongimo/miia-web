@@ -18,14 +18,25 @@
   let current_object_fit: "contain" | "cover" | "fill" = "contain";
   let show_scroll: boolean = false;
 
-  let dom_file_refs: HTMLElement[] = [];
+  // let dom_file_refs: HTMLElement[] = [];
   let dom_files: HTMLElement;
 
   let loaded_file_ids: string[] = [];
+  let loaded_files: { file_id: string; file_index: number }[] = [];
   $: loaded_file_ids = file_ids.slice(
     Math.max(index - loaded_range, 0),
-    Math.min(index + loaded_range, file_ids.length)
+    Math.min(index + loaded_range + 1, file_ids.length)
   );
+  $: if (enabled) {
+    loaded_files = [];
+    console.log("redo loaded_files");
+    for (let i = 0; i < loaded_file_ids.length; i++) {
+      const file_id = loaded_file_ids[i];
+      const file_index = i + Math.max(index - loaded_range, 0);
+      loaded_files.push({ file_id, file_index });
+    }
+  }
+
   // $: {
   //   if (file_ids && index !== 0) {
   //     setURLIndex(file_ids[index]);
@@ -86,7 +97,11 @@
   onMount(() => {});
 
   // Touch events
+  /** The relative index of the current image with reguards to the loaded_file_ids array */
+  let offset_index = 0;
+  $: offset_index = index - Math.max(index - loaded_range, 0);
   let touch_start_x: number = null;
+  let transition_x: number = 0;
 
   function touchStart(event: UIEvent) {
     touch_start_x = unifyTouchAndClick(event).clientX;
@@ -96,16 +111,23 @@
       const delta_x = unifyTouchAndClick(event).clientX - touch_start_x;
       const sign = Math.sign(delta_x);
 
-      if(sign === 0) {
+      if (sign === 0) {
         // do nothing, was a tap!
-      }
-      else if (Math.sign(delta_x) < 0) {
+      } else if (Math.sign(delta_x) < 0) {
         index = Math.min(index + 1, file_ids.length);
       } else {
         index = Math.max(index - 1, 0);
       }
 
+      // transition_x = 0;
       touch_start_x = null;
+    }
+  }
+  function drag(event: UIEvent) {
+    if (touch_start_x !== null) {
+      // transition_x = Math.round(
+      //   unifyTouchAndClick(event).clientX - touch_start_x
+      // );
     }
   }
 
@@ -127,6 +149,7 @@
     z-index: 10;
     --n: 1;
     --i: 0;
+    --tx: 0;
   }
 
   .files {
@@ -140,9 +163,18 @@
 
     // Advance the current item
     // -100% is the size of each item
-    transform: translate(calc(var(--i, 0) / var(--n, 1) * -100%));
-    transition: transform 0.2s cubic-bezier(0, 0.55, 0.45, 1);
+    // transform: translate(calc(var(--i, 0) / var(--n, 1) * -100%));
+    transform: translate(
+      calc(var(--i, 0) / var(--n, 1) * -100% + var(--tx, 0px))
+    );
+
+    // Browsers seem to complain about will-change budget, disabiling
     // will-change: transform;
+
+    // TODO: Work on smooth file_id window advancing
+    &.smooth {
+      // transition: transform 0.2s cubic-bezier(0, 0.55, 0.45, 1);
+    }
 
     overflow: hidden;
     scrollbar-width: thin;
@@ -210,49 +242,50 @@
 </style>
 
 {#if enabled}
-  <div class="background" style="--n: max({file_ids.length}, 1); --i: {index};">
+  <div
+    class="background"
+    style="--n: max({file_ids.length}, 1); --i: {offset_index}; --tx: {transition_x !== null ? transition_x : 0}px">
     <div
       class="files"
       class:cover={current_object_fit === 'cover'}
       class:contain={current_object_fit === 'contain'}
       class:fill={current_object_fit === 'fill'}
+      class:smooth={touch_start_x === null}
       style="overflow-y: {show_scroll ? 'scroll' : 'hidden'}"
+      on:dblclick|preventDefault={cycleObjectFit}
       on:mousedown|preventDefault={touchStart}
       on:touchstart|preventDefault={touchStart}
+      on:mousemove|preventDefault={drag}
+      on:touchmove|preventDefault={drag}
       on:mouseup={touchEnd}
       on:touchend|preventDefault={touchEnd}
       bind:this={dom_files}>
-      {#each loaded_file_ids as this_id, this_i (this_id)}
-        <div
+      <!-- TODO: This should update in a smoother way -->
+      {#each loaded_files as file (file.file_id)}
+        <!-- <div
           class="file"
-          class:current={index === this_i}
-          bind:this={dom_file_refs[this_i]}
-          on:dblclick|preventDefault={cycleObjectFit}>
-          {#await getMetadata(this_id)}
+          class:current={index === (this_i + Math.max(index - loaded_range, 0))}
+          > -->
+        <div class="file">
+          {#await getMetadata(file.file_id)}
             <div
               class="spinner-border"
               role="status"
-              title="Querying {this_id}'s metadata" />
+              title="Querying {file.file_id}'s metadata" />
           {:then metadata}
-            <!-- <p style="color: yellow">
-              From
-              <code>file_ids[{file_ids.length}]</code>
-              : select index
-              <code>{this_i}</code>
-            </p> -->
             <!-- <RequestedFile
               file_id={this_id}
               enabled={this_i >= index - loaded_range && this_i <= index + loaded_range}
               bind:object_fit={current_object_fit}
               {metadata} /> -->
             <RequestedFile
-              file_id={this_id}
+              file_id={file.file_id}
               enabled={true}
               bind:object_fit={current_object_fit}
               {metadata} />
           {:catch error}
             <p style="color: yellow">
-              From <code>file_ids[{file_ids.length}]</code> : select index <code>{this_i}</code>
+              From <code>file_ids[{file_ids.length}]</code> : select id <code>{file.file_id}</code>
             </p>
             <pre style="color: red">{error.message}</pre>
             {@debug error}
