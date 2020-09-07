@@ -21,6 +21,11 @@
   let dom_file_refs: HTMLElement[] = [];
   let dom_files: HTMLElement;
 
+  let loaded_file_ids: string[] = [];
+  $: loaded_file_ids = file_ids.slice(
+    Math.max(index - loaded_range, 0),
+    Math.min(index + loaded_range, file_ids.length)
+  );
   // $: {
   //   if (file_ids && index !== 0) {
   //     setURLIndex(file_ids[index]);
@@ -109,7 +114,7 @@
     // -100% is the size of each item
     transform: translate(calc(var(--i, 0) / var(--n, 1) * -100%));
     transition: transform 0.2s cubic-bezier(0, 0.55, 0.45, 1);
-    will-change: transform;
+    // will-change: transform;
 
     overflow: hidden;
     scrollbar-width: thin;
@@ -184,7 +189,7 @@
       class:fill={current_object_fit === 'fill'}
       style="overflow-y: {show_scroll ? 'scroll' : 'hidden'}"
       bind:this={dom_files}>
-      {#each file_ids as this_id, this_i (this_id)}
+      {#each loaded_file_ids as this_id, this_i (this_id)}
         <div
           class="file"
           class:current={index === this_i}
@@ -205,10 +210,11 @@
             <!-- <RequestedFile
               file_id={this_id}
               enabled={this_i >= index - loaded_range && this_i <= index + loaded_range}
+              bind:object_fit={current_object_fit}
               {metadata} /> -->
             <RequestedFile
               file_id={this_id}
-              enabled={this_i >= index - loaded_range && this_i <= index + loaded_range}
+              enabled={true}
               bind:object_fit={current_object_fit}
               {metadata} />
           {:catch error}

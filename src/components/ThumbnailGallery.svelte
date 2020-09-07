@@ -5,7 +5,7 @@
   import { syncMetadata } from "../js/local-database";
 
   import Thumbnail from "./Thumbnail.svelte";
-  import LightboxV2 from "./LightboxV2.svelte";
+  import LightboxV1 from "./LightboxV1.svelte";
 
   /** @type {string[]} */
   export let file_ids = [];
@@ -129,7 +129,7 @@
   }
 </style>
 
-<LightboxV2 bind:index bind:enabled={lightbox_enabled} bind:file_ids />
+<LightboxV1 bind:index bind:enabled={lightbox_enabled} bind:file_ids />
 
 <div class="gallery" bind:this={dom_gallery}>
   {#each loaded_file_ids as this_id, i (this_id)}
