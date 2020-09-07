@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { GetClient } from "../js/hydrus-connection.js";
-  import { GetMetadataTable, cleanMetadata } from "../js/local-database.js";
+  import { GetMetadataTable, cleanMetadata } from "../js/local-database";
 
   import RequestedFile from "./RequestedFile.svelte";
 

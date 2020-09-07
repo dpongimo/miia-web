@@ -1,8 +1,10 @@
 import Dexie from "dexie";
+import { GetClient } from "./hydrus-connection";
 
 export const db_name = "miia-cache";
 export const metadata_table = "files";
 export const db_version = 1;
+const METADATA_PAGINATION = 20;
 
 /**
  * Dexie schema definition
@@ -35,6 +37,37 @@ export function GetMetadataTable() {
 		db.version(db_version).stores(schema);
 	}
 	return db.files;
+}
+
+/**
+ * Gets the requested file_ids metadata from the hydrus client
+ * Saves data to the `GetMetadataTable`
+ * 
+ * @param {string[]} file_ids_to_search 
+ */
+export async function syncMetadata(file_ids_to_search) {
+	const client = GetClient();
+	const files = GetMetadataTable();
+
+	for (let start_index = 0; start_index < file_ids_to_search.length; start_index += METADATA_PAGINATION) {
+		const file_id_subset = file_ids_to_search.slice(
+			start_index,
+			Math.min(
+				start_index + METADATA_PAGINATION,
+				file_ids_to_search.length
+			)
+		)
+		const { metadata: ref_metadata } = await client.get_file_metadata({
+			file_ids: file_id_subset,
+		});
+
+		const metadata = [];
+		for (const this_metadata of ref_metadata) {
+			metadata.push(cleanMetadata(this_metadata));
+		}
+
+		await files.bulkPut(metadata);
+	}
 }
 
 /**
