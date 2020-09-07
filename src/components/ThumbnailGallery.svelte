@@ -2,9 +2,10 @@
   import { onMount, tick } from "svelte";
 
   import { timeout } from "../js/helpers.js";
+  import { syncMetadata } from "../js/local-database";
 
   import Thumbnail from "./Thumbnail.svelte";
-  import LightboxV2 from "./LightboxV2.svelte";
+  import LightboxV1 from "./LightboxV1.svelte";
 
   /** @type {string[]} */
   export let file_ids = [];
@@ -97,6 +98,7 @@
         prev_end,
         Math.min(new_end, file_ids.length)
       );
+      syncMetadata(next_segment);
       loaded_file_ids = loaded_file_ids.concat(next_segment);
       // furthest_index += range;
     }
@@ -127,7 +129,7 @@
   }
 </style>
 
-<LightboxV2 bind:index bind:enabled={lightbox_enabled} bind:file_ids />
+<LightboxV1 bind:index bind:enabled={lightbox_enabled} bind:file_ids />
 
 <div class="gallery" bind:this={dom_gallery}>
   {#each loaded_file_ids as this_id, i (this_id)}
