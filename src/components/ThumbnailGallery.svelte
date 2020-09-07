@@ -4,7 +4,7 @@
   import { timeout } from "../js/helpers.js";
 
   import Thumbnail from "./Thumbnail.svelte";
-  import LightboxV1 from "./LightboxV1.svelte";
+  import LightboxV2 from "./LightboxV2.svelte";
 
   /** @type {string[]} */
   export let file_ids = [];
@@ -127,10 +127,7 @@
   }
 </style>
 
-<LightboxV1
-  bind:index
-  bind:enabled={lightbox_enabled}
-  bind:file_ids={loaded_file_ids} />
+<LightboxV2 bind:index bind:enabled={lightbox_enabled} bind:file_ids />
 
 <div class="gallery" bind:this={dom_gallery}>
   {#each loaded_file_ids as this_id, i (this_id)}
@@ -178,5 +175,4 @@
       {/if}
     </div>
   </div>
-
 </div>
