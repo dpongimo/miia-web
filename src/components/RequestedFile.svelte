@@ -1,23 +1,21 @@
-<script>
+<script lang="ts">
   import { debug } from "svelte/internal";
   import { onMount } from "svelte";
 
   import { GetClient, IsMIMEAllowed } from "../js/hydrus-connection.js";
+  import { Client } from "async-hydrus.js";
 
-  /** @type {Number}  */
-  export let file_id;
+  export let file_id: number;
   /** Metadata returned from Hydrus */
   export let metadata = undefined;
   /** API control to load the file */
   export let enabled = false;
-  /** @type {string} */
-  let object_url;
+  export let scale_mode: "width" | "width+height" | "free" = "width+height";
+  let object_url: string;
 
-  /** @type {Client}*/
-  let client;
+  let client: Client;
 
-  /** @type {File}*/
-  export let file = null;
+  export let file: File;
 
   onMount(() => {
     return () => {
@@ -63,17 +61,18 @@
 {#if enabled && typeof metadata === 'object' && IsMIMEAllowed(metadata.mime)}
   <div class="media-container">
     {#await getFileURL(file_id)}
-
       <div
         class="spinner-border"
         role="status"
         title="Downloading {file_id}"
         aria-hidden="true" />
       <h4>{file_id}</h4>
-
     {:then this_object_url}
-
-    <img class="img-fluid" src={this_object_url} alt="" />
+      <img
+        class="img-fluid"
+        style="max-height: {scale_mode === 'width+height' ? 'var(--window-height)' : ''}"
+        src={this_object_url}
+        alt="" />
       <!-- {#if metadata.mime.includes('image')}
       {:else if metadata.mime.includes('video')}
         <video muted loop playsinline autoplay src={this_object_url} />
@@ -85,12 +84,9 @@
         Enabled:
         <code>{enabled}</code>
       </p> -->
-
     {:catch error}
-
       {@debug error}
       <pre style="color: red">{error.message}</pre>
-
     {/await}
   </div>
 {/if}
