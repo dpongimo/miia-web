@@ -34,7 +34,7 @@
     "@sveltejs/svelte-virtual-list": "^3.0.1",
     "async-hydrus.js": "dpongimo/async-hydrus.js",
     "autoprefixer": "^9.8.4",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "npm-run-all": "^4.1.5",
     "rollup": "^2.19.0",
     "rollup-plugin-svelte": "^5.2.3",
