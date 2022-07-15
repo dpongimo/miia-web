@@ -40,7 +40,7 @@
     "rollup-plugin-svelte": "^5.2.3",
     "rollup-plugin-terser": "^6.1.0",
     "sapper": "^0.27.16",
-    "svelte": "^3.23.2",
+    "svelte": "^3.49.0",
     "svelte-lazy": "^0.1.13",
     "svelte-preprocess": "^3.9.12",
     "typescript": "^4.0.2"
