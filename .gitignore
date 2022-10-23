@@ -1,8 +1,8 @@
 .DS_Store
-/node_modules/
-/src/node_modules/@sapper/
-yarn-error.log
-/cypress/screenshots/
-/__sapper__/
-/static/css/bundle.css
-/static/data/example-metadata.json
+node_modules
+/build
+/.svelte-kit
+/package
+.env
+.env.*
+!.env.example

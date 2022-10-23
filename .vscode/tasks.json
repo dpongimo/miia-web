@@ -3,10 +3,17 @@
 	"tasks": [
 		{
 			"type": "npm",
+			"script": "format",
+			"problemMatcher": [],
+			"label": "npm: format",
+			"detail": "prettier --plugin-search-dir . --write ."
+		},
+		{
+			"type": "npm",
 			"script": "dev",
 			"problemMatcher": [],
 			"label": "npm: dev",
-			"detail": "sapper dev"
+			"detail": "vite dev"
 		}
 	]
 }

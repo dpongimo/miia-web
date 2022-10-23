@@ -17,6 +17,7 @@ jobs:
         run: |
           npm ci
           npm run export
+
       - name: Add CNAME
         run: |
           echo "miia.website" >> __sapper__/export/CNAME
