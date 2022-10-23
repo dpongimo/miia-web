@@ -1,8 +1,8 @@
-<script>
-	export let segment;
+<script lang="ts">
+	export let segment: string;
 </script>
 
-<nav class="" role="navigation">
+<nav>
 	<div class="nav flex-sm-row">
 		<div class="nav-link col-xs-auto">
 			<a href="." class="logo">
