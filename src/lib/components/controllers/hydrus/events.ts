@@ -1,8 +1,20 @@
-export enum HydrusMessage {
-	getFileByID = "getFileByID"
+import type {
+	FileID,
+	IBasePage,
+	IDetailedPage,
+	ISimplifiedFileMetadata,
+	TagSearchQuery
+} from "./interfaces";
+
+export enum ServiceWorkerMessage {
+	search = "search",
+	getMetadata = "metadata",
+	getPagesList = "pagelist",
+	getPage = "page",
+	configUpdate = "cfg_update"
 }
 
-export interface IHydrusMessageEventDetail<TEvent extends HydrusMessage, TData> {
+export interface IHydrusMessageEventDetail<TEvent extends ServiceWorkerMessage, TData> {
 	/** The type of event this is */
 	ev: TEvent;
 	/** The data associated with this event */
@@ -13,7 +25,7 @@ export interface IHydrusMessageEventDetail<TEvent extends HydrusMessage, TData> 
 	tid: number;
 }
 
-export class HydrusMessageEvent<TEvent extends HydrusMessage, TData> extends CustomEvent<
+export class HydrusMessageEvent<TEvent extends ServiceWorkerMessage, TData> extends CustomEvent<
 	IHydrusMessageEventDetail<TEvent, TData>
 > {
 	constructor(event: TEvent, data: TData, timestamp: number) {
@@ -27,10 +39,37 @@ export class HydrusMessageEvent<TEvent extends HydrusMessage, TData> extends Cus
 	}
 }
 
+export const HydrusMessageRequests = new Set<ServiceWorkerMessage>([
+	ServiceWorkerMessage.search,
+	ServiceWorkerMessage.getMetadata,
+	ServiceWorkerMessage.getPagesList,
+	ServiceWorkerMessage.getPage
+]);
 export interface HydrusMessageRequestMap {
-	[HydrusMessage.getFileByID]: HydrusMessageEvent<HydrusMessage.getFileByID, number>;
+	[ServiceWorkerMessage.search]: HydrusMessageEvent<ServiceWorkerMessage.search, TagSearchQuery>;
+	[ServiceWorkerMessage.getPagesList]: HydrusMessageEvent<
+		ServiceWorkerMessage.getPagesList,
+		undefined
+	>;
+	[ServiceWorkerMessage.getMetadata]: HydrusMessageEvent<
+		ServiceWorkerMessage.getMetadata,
+		FileID[]
+	>;
+	[ServiceWorkerMessage.getPage]: HydrusMessageEvent<
+		ServiceWorkerMessage.getPage,
+		IBasePage["page_key"]
+	>;
 }
 
 export interface HydrusMessageResponseMap {
-	[HydrusMessage.getFileByID]: HydrusMessageEvent<HydrusMessage.getFileByID, Blob>;
+	[ServiceWorkerMessage.search]: HydrusMessageEvent<ServiceWorkerMessage.search, FileID[]>;
+	[ServiceWorkerMessage.getPagesList]: HydrusMessageEvent<
+		ServiceWorkerMessage.getPagesList,
+		(IBasePage | IDetailedPage)[]
+	>;
+	[ServiceWorkerMessage.getPage]: HydrusMessageEvent<ServiceWorkerMessage.getPage, IDetailedPage>;
+	[ServiceWorkerMessage.getMetadata]: HydrusMessageEvent<
+		ServiceWorkerMessage.getMetadata,
+		ISimplifiedFileMetadata
+	>;
 }

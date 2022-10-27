@@ -6,6 +6,7 @@
 		"esModuleInterop": true,
 		"forceConsistentCasingInFileNames": true,
 		"resolveJsonModule": true,
+		"lib": ["esnext", "DOM", "DOM.Iterable", "WebWorker"],
 		"skipLibCheck": true,
 		"sourceMap": true,
 		"strict": true
