@@ -1,8 +1,5 @@
 {
-	"cSpell.words": [
-		"degit",
-		"Dexie",
-		"dpongimo",
-		"Miia"
-	]
+	"cSpell.words": ["degit", "Dexie", "dpongimo", "Miia"],
+	"javascript.preferences.importModuleSpecifierEnding": "js",
+	"typescript.preferences.importModuleSpecifierEnding": "js"
 }

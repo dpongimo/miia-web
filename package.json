@@ -37,8 +37,5 @@
 		"typescript": "^4.7.4",
 		"vite": "^3.1.0"
 	},
-	"type": "module",
-	"_removedDeps": {
-		"async-hydrus.js": "dpongimo/async-hydrus.js"
-	}
+	"type": "module"
 }
